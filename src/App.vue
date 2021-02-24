@@ -1,10 +1,15 @@
 <template>
   <div id="app">
-    <Header />
+    <Header :numCorrect="numCorrect" :numTotal="numTotal" />
     <b-container class="bv-example-row">
       <b-row>
         <b-col sm="6" offset="3">
-          <QuestionBox :question="questions[index]" />
+          <QuestionBox
+            v-if="questions.length"
+            :currentQuestion="questions[index]"
+            :btnNext="nextQuestion"
+            :increment="increment"
+          />
         </b-col>
       </b-row>
     </b-container>
@@ -25,15 +30,26 @@ export default {
     return {
       questions: [],
       index: 0,
+      numCorrect: 0,
+      numTotal: 0,
     };
   },
-  mounted() {
-    fetch(
-      "https://opentdb.com/api.php?amount=15&type=multiple&encode=url3986",
-      {
-        method: "get",
+  methods: {
+    nextQuestion() {
+      this.index++;
+    },
+    increment(isCorrect) {
+      if (isCorrect) {
+        this.numCorrect++;
       }
-    )
+      this.numTotal++;
+    },
+  },
+
+  mounted() {
+    fetch("https://opentdb.com/api.php?amount=10&type=multiple", {
+      method: "get",
+    })
       .then((response) => response.json())
       .then((data) => {
         this.questions = data.results;
