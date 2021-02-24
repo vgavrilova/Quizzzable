@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<script>
+<script charset="utf-8">
 import Header from "./components/Header.vue";
 import QuestionBox from "./components/QuestionBox";
 
@@ -36,6 +36,9 @@ export default {
   },
   methods: {
     nextQuestion() {
+      if (this.numTotal === 10) {
+        this.results();
+      }
       this.index++;
     },
     increment(isCorrect) {
@@ -44,10 +47,13 @@ export default {
       }
       this.numTotal++;
     },
+    results() {
+      alert("Your Score " + this.numCorrect + " out of " + this.numTotal + "!");
+    },
   },
 
   mounted() {
-    fetch("https://opentdb.com/api.php?amount=10&type=multiple", {
+    fetch("https://opentdb.com/api.php?amount=10&type=multiple&encode=base64", {
       method: "get",
     })
       .then((response) => response.json())

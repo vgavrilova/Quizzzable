@@ -2,7 +2,7 @@
   <div class="question-box-container">
     <b-jumbotron>
       <template #lead>
-        {{ currentQuestion.question }}
+        {{ decodeQuestion }}
       </template>
 
       <hr class="my-4" />
@@ -31,7 +31,7 @@
         variant="success"
         href="#"
         @click="btnNext"
-        :disabled="selectedIndex === null"
+        :disabled="selectedIndex === null || !answered"
         >Next ></b-button
       >
     </b-jumbotron>
@@ -56,7 +56,7 @@ export default {
   methods: {
     select(index) {
       this.correctIndex = this.answersArr.indexOf(
-        this.currentQuestion.correct_answer
+        atob(this.currentQuestion.correct_answer)
       );
       this.selectedIndex = index;
     },
@@ -73,10 +73,7 @@ export default {
       // if selected answer is a correct answer
       // return true
       let isCorrect;
-      if (
-        this.answersArr[this.selectedIndex] ===
-        this.currentQuestion.correct_answer
-      ) {
+      if (this.selectedIndex === this.correctIndex) {
         isCorrect = true;
       }
       this.increment(isCorrect);
@@ -95,8 +92,13 @@ export default {
       const answers = [
         this.currentQuestion.correct_answer,
         ...this.currentQuestion.incorrect_answers,
-      ];
+      ].map((answer) => {
+        return atob(answer);
+      });
       return this.shuffleArray(answers);
+    },
+    decodeQuestion() {
+      return atob(this.currentQuestion.question);
     },
   },
 };
